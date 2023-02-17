@@ -15,13 +15,14 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: '1.20'
-      cache: true
+        cache: true
 
-    - uses: actions/checkout@v3
 
     - name: Install dependencies
       run: go mod vendor
@@ -32,16 +33,16 @@ jobs:
         version: 'latest'
 
   test:
-    needs: lint
+    needs: golangci
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
         go-version: '1.20'
-      cache: true
-
-    - uses: actions/checkout@v3
+        cache: true
 
     - name: Install dependencies
       run: go mod vendor
@@ -50,10 +51,16 @@ jobs:
       run: go test -v ./...
 
   build:
-    needs: [lint, test]
+    needs: [golangci, test]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.20'
+        cache: true
 
     - name: Install dependencies
       run: go mod vendor
